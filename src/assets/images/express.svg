@@ -1,0 +1,5 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="128" cy="128" r="128" fill="#4a4a4a"/>
+  <text x="128" y="172" font-family="Helvetica, Arial, sans-serif" font-size="140" font-weight="400"
+        fill="#ffffff" text-anchor="middle">ex</text>
+</svg>
