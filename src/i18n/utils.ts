@@ -1,25 +1,6 @@
 import { SITE } from '../config';
 
-/**
- * Rutas locales de cada página por idioma.
- * Los slugs de proyecto son idénticos en ambos idiomas, así que solo
- * se traducen los segmentos de página.
- */
-const PAGE_SEGMENTS: Record<string, { es: string; en: string }> = {
-	'': { es: '', en: '' },
-	proyectos: { es: 'proyectos', en: 'projects' },
-	projects: { es: 'proyectos', en: 'projects' },
-	'sobre-mi': { es: 'sobre-mi', en: 'about' },
-	about: { es: 'sobre-mi', en: 'about' },
-	tecnologias: { es: 'tecnologias', en: 'stack' },
-	stack: { es: 'tecnologias', en: 'stack' },
-	contacto: { es: 'contacto', en: 'contact' },
-	contact: { es: 'contacto', en: 'contact' },
-};
-
 export type Locale = (typeof SITE.locales)[number];
-
-/** Páginas del sitio y su segmento de ruta en cada idioma. */
 export type PageKey = 'home' | 'projects' | 'about' | 'stack' | 'contact';
 
 const PAGES: Record<PageKey, { es: string; en: string }> = {
@@ -29,6 +10,15 @@ const PAGES: Record<PageKey, { es: string; en: string }> = {
 	stack: { es: 'tecnologias', en: 'stack' },
 	contact: { es: 'contacto', en: 'contact' },
 };
+
+const SEGMENTS: Record<string, PageKey> = Object.entries(PAGES).reduce(
+	(acc, [key, value]) => {
+		acc[value.es || '/'] = key as PageKey;
+		acc[value.en || '/'] = key as PageKey;
+		return acc;
+	},
+	{} as Record<string, PageKey>
+);
 
 /** Ruta local de una página en el idioma dado (con barra final). */
 export function pagePath(locale: Locale, page: PageKey): string {
@@ -52,19 +42,34 @@ export function getLocaleFromUrl(pathname: string): Locale {
 	return first === 'en' ? 'en' : 'es';
 }
 
-/** Traduce una ruta actual (p. ej. `/es/proyectos/umbrachat`) al idioma destino. */
+/** Devuelve la clave de página a partir de un segmento de ruta. */
+export function getPageFromSegment(segment: string | undefined): PageKey | undefined {
+	if (!segment) return 'home';
+	return SEGMENTS[segment];
+}
+
+/**
+ * Traduce una ruta actual (p. ej. `/es/proyectos/umbrachat/`) al idioma destino.
+ * Conserva el slug del proyecto y normaliza siempre la barra final.
+ */
 export function translatePath(pathname: string, to: Locale): string {
 	const segments = pathname.split('/').filter(Boolean);
-	// Ignora el prefijo de idioma si existe.
 	const raw = segments[0] === 'es' || segments[0] === 'en' ? segments.slice(1) : segments;
 	const mapped = raw.map((segment, index) => {
-		if (index === 0 && PAGE_SEGMENTS[segment]) return PAGE_SEGMENTS[segment][to];
-		return segment;
+		if (index !== 0) return segment;
+		const page = SEGMENTS[segment];
+		return page ? PAGES[page][to] : segment;
 	});
-	return `/${to}/${mapped.join('/')}`;
+	const normalized = mapped.filter(Boolean).join('/');
+	return `/${to}/${normalized ? `${normalized}/` : ''}`;
 }
 
 /** Devuelve la URL canónica (absoluta) de la página actual. */
-export function canonicalUrl(pathname: string): string {
-	return new URL(pathname, SITE.url).toString();
+export function canonicalUrl(pathname: string, base: URL | string = SITE.url): string {
+	return new URL(pathname, base).toString();
+}
+
+/** Devuelve el otro idioma soportado. */
+export function otherLocale(locale: Locale): Locale {
+	return locale === 'es' ? 'en' : 'es';
 }

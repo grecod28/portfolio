@@ -2,10 +2,10 @@
 /**
  * Ficha de proyecto: problema → decisiones técnicas → resultado → stack → enlaces.
  */
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
+import { Picture } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
 import { useUI } from '../../i18n/ui';
-import { projectsIndexPath, type Locale } from '../../i18n/utils';
+import { projectDetailPath, projectsIndexPath, type Locale } from '../../i18n/utils';
 import { getCover } from '../../lib/covers';
 import Icon from '../Icon.astro';
 
@@ -16,31 +16,68 @@ interface Props {
 
 const { locale, project } = Astro.props;
 const t = useUI(locale);
-const { title, tagline, stack, cover, coverAlt, links, problem, decisions, result, metrics, technicalNotes, architecturePending } = project.data;
+const {
+	title,
+	tagline,
+	stack,
+	cover,
+	coverAlt,
+	links,
+	problem,
+	decisions,
+	result,
+	metrics,
+	technicalNotes,
+	architecturePending,
+} = project.data;
 
 const coverImage = getCover(cover);
 const indexPath = projectsIndexPath(locale);
 const technicalItems = technicalNotes[locale];
-const linkIcon: Record<string, 'github' | 'external'> = { repo: 'github', demo: 'external', web: 'external', store: 'external' };
+const linkIcon: Record<string, 'github' | 'external'> = {
+	repo: 'github',
+	demo: 'external',
+	web: 'external',
+	store: 'external',
+};
 const primaryLinks = links.filter((l) => l.kind !== 'repo');
 const repoLinks = links.filter((l) => l.kind === 'repo');
 const headerLinks = [...primaryLinks, ...repoLinks];
+
+const allProjects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const currentIndex = allProjects.findIndex((item) => item.id === project.id);
+const previousProject = currentIndex > 0 ? allProjects[currentIndex - 1] : undefined;
+const nextProject =
+	currentIndex >= 0 && currentIndex < allProjects.length - 1
+		? allProjects[currentIndex + 1]
+		: undefined;
+
+const toc = [
+	{ id: 'project-problem', label: t.project.problem },
+	{ id: 'project-decisions', label: t.project.decisions },
+	{ id: 'project-result', label: t.project.result },
+	...(metrics.length > 0 ? [{ id: 'project-metrics', label: t.project.metrics }] : []),
+	...(architecturePending ? [{ id: 'project-architecture', label: t.project.architecture }] : []),
+];
 ---
 
 <article class="container-page py-10 sm:py-14">
 	<a
 		href={indexPath}
-		class="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+		class="inline-flex min-h-11 items-center gap-1.5 font-mono text-[0.68rem] font-semibold tracking-wide text-muted uppercase transition-colors hover:text-ink"
 	>
 		<Icon name="arrow-left" size={15} />
 		{t.project.back}
 	</a>
 
-	<header class="mt-6 max-w-3xl space-y-5">
-		<h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{title[locale]}</h1>
-		<p class="text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">{tagline[locale]}</p>
+	<header class="mt-6 max-w-4xl">
+		<p class="section-label">{t.project.caseStudy}</p>
+		<h1 class="mt-3 text-3xl font-semibold tracking-[-0.05em] text-balance sm:text-5xl">
+			{title[locale]}
+		</h1>
+		<p class="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-muted">{tagline[locale]}</p>
 		{headerLinks.length > 0 && (
-			<div class="flex flex-wrap gap-3">
+			<div class="mt-7 flex flex-wrap gap-3">
 				{headerLinks.map((link) => (
 					<a
 						href={link.url}
@@ -56,78 +93,103 @@ const headerLinks = [...primaryLinks, ...repoLinks];
 		)}
 	</header>
 
-	{
-		coverImage ? (
-			<figure class="mt-10">
-				<Image
-					src={coverImage}
-					alt={coverAlt[locale]}
-					width={1200}
-					format="webp"
-					quality={85}
-					fetchpriority="high"
-					class="w-full rounded-2xl border border-neutral-200 dark:border-neutral-800"
-				/>
-				<figcaption class="sr-only">{coverAlt[locale]}</figcaption>
-			</figure>
-		) : (
-			<div
-				class="mt-10 flex aspect-video w-full items-center justify-center rounded-2xl border-2 border-dashed border-neutral-300 font-mono text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-500"
-			>
-				{t.project.coverPending}
-			</div>
-		)
-	}
+	{coverImage ? (
+		<figure class="mt-10" transition:name={`project-cover-${project.id}`}>
+			<Picture
+				src={coverImage}
+				alt={coverAlt[locale]}
+				formats={['avif', 'webp']}
+				fallbackFormat="webp"
+				layout="full-width"
+				width={1600}
+				height={1000}
+				loading="eager"
+				fetchpriority="high"
+				class="w-full border border-line object-cover"
+			/>
+			<figcaption class="mt-2 font-mono text-[0.62rem] tracking-wide text-muted uppercase">
+				{coverAlt[locale]}
+			</figcaption>
+		</figure>
+	) : (
+		<div class="mt-10 flex aspect-video w-full items-center justify-center border border-dashed border-line bg-surface font-mono text-[0.68rem] tracking-wide text-muted uppercase">
+			{t.project.coverPending}
+		</div>
+	)}
 
-	<div class="mt-12 grid gap-12 lg:grid-cols-[1.15fr_0.85fr]">
-		<div class="space-y-12">
-			<section aria-labelledby="project-problem">
-				<h2 id="project-problem" class="section-h2 mb-3">{t.project.problem}</h2>
-				<p class="leading-relaxed text-neutral-700 dark:text-neutral-300">{problem[locale]}</p>
+	<div class="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
+		<div class="min-w-0 space-y-12">
+			<section
+				aria-labelledby="project-problem-title"
+				id="project-problem"
+				class="reveal scroll-mt-28"
+			>
+				<p class="section-label">01</p>
+				<h2 id="project-problem-title" class="mt-2 text-2xl font-semibold tracking-tight">
+					{t.project.problem}
+				</h2>
+				<p class="mt-4 max-w-3xl text-pretty leading-relaxed text-muted">{problem[locale]}</p>
 			</section>
 
-			<section aria-labelledby="project-decisions">
-				<h2 id="project-decisions" class="section-h2 mb-3">{t.project.decisions}</h2>
-				<ul class="space-y-3">
+			<section
+				aria-labelledby="project-decisions-title"
+				id="project-decisions"
+				class="reveal scroll-mt-28"
+			>
+				<p class="section-label">02</p>
+				<h2 id="project-decisions-title" class="mt-2 text-2xl font-semibold tracking-tight">
+					{t.project.decisions}
+				</h2>
+				<ul class="mt-5 space-y-3">
 					{decisions[locale].map((item) => (
-						<li class="flex gap-3 leading-relaxed text-neutral-700 dark:text-neutral-300">
-							<Icon name="check" size={16} class="mt-1 shrink-0 text-indigo-600 dark:text-indigo-400" />
+						<li class="flex gap-3 leading-relaxed text-muted">
+							<span class="mt-1 flex h-5 w-5 shrink-0 items-center justify-center border border-line bg-surface font-mono text-[0.6rem] text-accent-strong">
+								<Icon name="check" size={12} />
+							</span>
 							<span>{item}</span>
 						</li>
 					))}
 				</ul>
 				{technicalItems.length > 0 && (
-					<div
-						class="mt-6 rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 p-5 dark:border-neutral-800 dark:bg-neutral-900/60"
-					>
-						<h3 class="font-mono text-xs font-semibold tracking-[0.15em] text-neutral-500 uppercase">
-							{t.project.technicalNotes}
-						</h3>
+					<div class="mt-7 border border-dashed border-line bg-surface p-5">
+						<h3 class="section-label">{t.project.technicalNotes}</h3>
 						<ul class="mt-3 space-y-2">
 							{technicalItems.map((item) => (
-								<li class="font-mono text-xs leading-relaxed text-neutral-500">{item}</li>
+								<li class="font-mono text-[0.7rem] leading-relaxed text-muted">{item}</li>
 							))}
 						</ul>
 					</div>
 				)}
 			</section>
 
-			<section aria-labelledby="project-result">
-				<h2 id="project-result" class="section-h2 mb-3">{t.project.result}</h2>
-				<p class="leading-relaxed text-neutral-700 dark:text-neutral-300">{result[locale]}</p>
+			<section
+				aria-labelledby="project-result-title"
+				id="project-result"
+				class="reveal scroll-mt-28"
+			>
+				<p class="section-label">03</p>
+				<h2 id="project-result-title" class="mt-2 text-2xl font-semibold tracking-tight">
+					{t.project.result}
+				</h2>
+				<p class="mt-4 max-w-3xl text-pretty leading-relaxed text-muted">{result[locale]}</p>
 			</section>
 
 			{metrics.length > 0 && (
-				<section aria-labelledby="project-metrics">
-					<h2 id="project-metrics" class="section-h2 mb-2">{t.project.metrics}</h2>
-					<p class="mb-4 text-sm text-neutral-500 dark:text-neutral-500">
-						{t.project.metricsPending}
+				<section
+					aria-labelledby="project-metrics-title"
+					id="project-metrics"
+					class="reveal scroll-mt-28"
+				>
+					<p class="section-label">04</p>
+					<h2 id="project-metrics-title" class="mt-2 text-2xl font-semibold tracking-tight">
+						{t.project.metrics}
+					</h2>
+					<p class="mt-2 font-mono text-[0.65rem] tracking-wide text-warm uppercase">
+						{t.project.pending}
 					</p>
-					<ul class="grid gap-3 sm:grid-cols-3">
+					<ul class="mt-4 grid gap-3 sm:grid-cols-3">
 						{metrics.map((metric) => (
-							<li
-								class="rounded-xl border border-dashed border-neutral-300 px-4 py-3 font-mono text-xs leading-relaxed text-neutral-500 dark:border-neutral-800 dark:text-neutral-500"
-							>
+							<li class="border border-dashed border-line bg-surface px-4 py-3 font-mono text-[0.68rem] leading-relaxed text-muted">
 								{metric}
 							</li>
 						))}
@@ -136,21 +198,45 @@ const headerLinks = [...primaryLinks, ...repoLinks];
 			)}
 
 			{architecturePending && (
-				<section aria-labelledby="project-architecture">
-					<h2 id="project-architecture" class="section-h2 mb-3">{t.project.architecture}</h2>
-					<div
-						class="flex aspect-video items-center justify-center rounded-2xl border-2 border-dashed border-neutral-300 font-mono text-xs text-neutral-500 dark:border-neutral-800 dark:text-neutral-500"
-					>
+				<section
+					aria-labelledby="project-architecture-title"
+					id="project-architecture"
+					class="reveal scroll-mt-28"
+				>
+					<p class="section-label">05</p>
+					<h2 id="project-architecture-title" class="mt-2 text-2xl font-semibold tracking-tight">
+						{t.project.architecture}
+					</h2>
+					<div class="mt-4 flex aspect-video items-center justify-center border border-dashed border-line bg-surface font-mono text-[0.68rem] tracking-wide text-muted uppercase">
 						{t.project.architecturePending}
 					</div>
 				</section>
 			)}
 		</div>
 
-		<aside class="space-y-10">
+		<aside class="space-y-8 lg:sticky lg:top-28">
+			<nav aria-label={t.project.toc} class="border border-line bg-surface p-5">
+				<p class="section-label">{t.project.toc}</p>
+				<ul class="mt-4 space-y-1">
+					{toc.map((item) => (
+						<li>
+							<a
+								href={`#${item.id}`}
+								data-toc-link={item.id}
+								class="inline-flex min-h-9 items-center border-l border-line pl-3 text-sm text-muted transition-colors hover:border-accent hover:text-ink aria-[current=location]:border-accent aria-[current=location]:font-medium aria-[current=location]:text-accent-strong"
+							>
+								{item.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			</nav>
+
 			<section aria-labelledby="project-stack">
-				<h2 id="project-stack" class="section-h2 mb-4">{t.project.stack}</h2>
-				<ul class="flex flex-wrap gap-1.5">
+				<h2 id="project-stack" class="section-label">
+					{t.project.stack}
+				</h2>
+				<ul class="mt-3 flex flex-wrap gap-1.5">
 					{stack.map((tech) => (
 						<li class="chip">{tech}</li>
 					))}
@@ -159,21 +245,23 @@ const headerLinks = [...primaryLinks, ...repoLinks];
 
 			{links.length > 0 && (
 				<section aria-labelledby="project-links">
-					<h2 id="project-links" class="section-h2 mb-4">{t.project.links}</h2>
-					<ul class="space-y-2.5">
+					<h2 id="project-links" class="section-label">
+						{t.project.links}
+					</h2>
+					<ul class="mt-3 space-y-2">
 						{links.map((link) => (
 							<li>
 								<a
 									href={link.url}
 									target="_blank"
 									rel="noopener noreferrer"
-									class="flex items-center justify-between gap-3 rounded-xl border border-neutral-200 px-4 py-3 text-sm font-medium transition-colors hover:border-neutral-400 hover:bg-neutral-50 dark:border-neutral-800 dark:hover:border-neutral-600 dark:hover:bg-neutral-900"
+									class="flex min-h-11 items-center justify-between gap-3 border border-line bg-surface px-3 py-2 text-sm font-medium transition-colors hover:border-accent hover:text-accent-strong"
 								>
-									<span class="inline-flex items-center gap-2.5">
-										<Icon name={linkIcon[link.kind]} size={16} class="text-neutral-400" />
+									<span class="inline-flex items-center gap-2">
+										<Icon name={linkIcon[link.kind]} size={15} class="text-muted" />
 										{link.label[locale]}
 									</span>
-									<Icon name="external" size={14} class="shrink-0 text-neutral-400" />
+									<Icon name="external" size={13} class="shrink-0 text-muted" />
 								</a>
 							</li>
 						))}
@@ -182,4 +270,76 @@ const headerLinks = [...primaryLinks, ...repoLinks];
 			)}
 		</aside>
 	</div>
+
+	<nav
+		aria-label={t.projects.title}
+		class="mt-16 grid gap-3 border-t border-line pt-6 sm:grid-cols-2"
+	>
+		{previousProject ? (
+			<a
+				href={projectDetailPath(locale, previousProject.id)}
+				class="group border border-line bg-surface p-4 transition-colors hover:border-accent"
+			>
+				<span class="font-mono text-[0.62rem] tracking-wide text-muted uppercase">
+					← {t.project.previous}
+				</span>
+				<span class="mt-1 block font-medium group-hover:text-accent-strong">
+					{previousProject.data.title[locale]}
+				</span>
+			</a>
+		) : (
+			<span />
+		)}
+		{nextProject ? (
+			<a
+				href={projectDetailPath(locale, nextProject.id)}
+				class="group border border-line bg-surface p-4 text-right transition-colors hover:border-accent"
+			>
+				<span class="font-mono text-[0.62rem] tracking-wide text-muted uppercase">
+					{t.project.next} →
+				</span>
+				<span class="mt-1 block font-medium group-hover:text-accent-strong">
+					{nextProject.data.title[locale]}
+				</span>
+			</a>
+		) : (
+			<span />
+		)}
+	</nav>
 </article>
+
+<script>
+	let tocObserver: IntersectionObserver | undefined;
+
+	function initToc() {
+		tocObserver?.disconnect();
+		const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]'));
+		if (links.length === 0) return;
+
+		const sections = links
+			.map((link) => document.getElementById(link.dataset.tocLink ?? ''))
+			.filter((section): section is HTMLElement => Boolean(section));
+
+		const setActive = (id: string) => {
+			links.forEach((link) => {
+				if (link.dataset.tocLink === id) link.setAttribute('aria-current', 'location');
+				else link.removeAttribute('aria-current');
+			});
+		};
+
+		tocObserver = new IntersectionObserver(
+			(entries) => {
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+				if (visible[0]) setActive(visible[0].target.id);
+			},
+			{ rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] }
+		);
+
+		sections.forEach((section) => tocObserver?.observe(section));
+	}
+
+	initToc();
+	document.addEventListener('astro:page-load', initToc);
+</script>

@@ -1,0 +1,51 @@
+[
+	{
+		"id": "nextjs",
+		"group": "frontend",
+		"name": "Next.js (App Router)",
+		"icon": "nextjs",
+		"order": 1
+	},
+	{ "id": "react", "group": "frontend", "name": "React", "icon": "react", "order": 2 },
+	{ "id": "angular", "group": "frontend", "name": "Angular", "icon": "angular", "order": 3 },
+	{
+		"id": "typescript",
+		"group": "frontend",
+		"name": "TypeScript",
+		"icon": "typescript",
+		"order": 4
+	},
+	{ "id": "tailwind", "group": "frontend", "name": "Tailwind CSS", "icon": "tailwind", "order": 5 },
+	{ "id": "sass", "group": "frontend", "name": "Sass", "icon": "sass", "order": 6 },
+	{ "id": "astro", "group": "frontend", "name": "Astro", "icon": "astro", "order": 7 },
+	{
+		"id": "react-native",
+		"group": "frontend",
+		"name": "React Native",
+		"icon": "reactNative",
+		"order": 8
+	},
+	{ "id": "nestjs", "group": "backend", "name": "NestJS", "icon": "nestjs", "order": 9 },
+	{ "id": "nodejs", "group": "backend", "name": "Node.js", "icon": "nodejs", "order": 10 },
+	{ "id": "express", "group": "backend", "name": "Express", "icon": "express", "order": 11 },
+	{ "id": "rest", "group": "backend", "name": "APIs REST", "order": 12 },
+	{ "id": "websockets", "group": "backend", "name": "WebSockets", "order": 13 },
+	{ "id": "bullmq", "group": "backend", "name": "BullMQ", "order": 14 },
+	{ "id": "postgresql", "group": "data", "name": "PostgreSQL", "icon": "pgsql", "order": 15 },
+	{ "id": "mysql", "group": "data", "name": "MySQL", "order": 16 },
+	{ "id": "mongodb", "group": "data", "name": "MongoDB", "icon": "mongo", "order": 17 },
+	{ "id": "redis", "group": "data", "name": "Redis", "icon": "redis", "order": 18 },
+	{ "id": "prisma", "group": "data", "name": "Prisma", "order": 19 },
+	{ "id": "typeorm", "group": "data", "name": "TypeORM", "order": 20 },
+	{ "id": "mongoose", "group": "data", "name": "Mongoose", "order": 21 },
+	{ "id": "docker", "group": "infra", "name": "Docker", "icon": "docker", "order": 22 },
+	{ "id": "aws", "group": "infra", "name": "AWS", "icon": "aws", "order": 23 },
+	{ "id": "nginx", "group": "infra", "name": "Nginx", "icon": "nginx", "order": 24 },
+	{
+		"id": "github-actions",
+		"group": "infra",
+		"name": "GitHub Actions",
+		"icon": "githubActions",
+		"order": 25
+	}
+]

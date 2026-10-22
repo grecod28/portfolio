@@ -1,5 +1,5 @@
 import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { file, glob } from 'astro/loaders';
 import { z } from 'zod';
 
 /**
@@ -75,4 +75,19 @@ const experience = defineCollection({
 	}),
 });
 
-export const collections = { projects, experience };
+/**
+ * Colección `skills`: una entrada por tecnología, agrupada por área.
+ * Usa el loader `file()` para demostrar la Content Layer API con JSON.
+ */
+const skills = defineCollection({
+	loader: file('./src/content/skills.json'),
+	schema: z.object({
+		id: z.string().min(1),
+		group: z.enum(['frontend', 'backend', 'data', 'infra']),
+		name: z.string().min(1),
+		icon: z.string().optional(),
+		order: z.number().default(0),
+	}),
+});
+
+export const collections = { projects, experience, skills };

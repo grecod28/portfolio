@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import About from '../../components/pages/About.astro';
 import { useUI } from '../../i18n/ui';
@@ -8,10 +9,10 @@ const t = useUI(locale);
 ---
 
 <BaseLayout
-	locale={locale}
+	{locale}
 	title={t.about.title}
 	description={t.about.description}
 	image="/og/about-es.png"
 >
-	<About locale={locale} />
+	<About {locale} />
 </BaseLayout>

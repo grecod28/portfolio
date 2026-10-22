@@ -28,13 +28,13 @@ problem:
   en: Paper cards get lost and links get mistyped. KnowMeet generates a digital card with every contact link and lets you share it by scanning a QR code.
 decisions:
   es:
-    - "React Native con TypeScript para cubrir iOS y Android con una sola base de código."
-    - "Backend con Node.js y PostgreSQL para las tarjetas y los perfiles."
-    - "Docker para empaquetar los servicios en desarrollo y despliegue."
+    - 'React Native con TypeScript para cubrir iOS y Android con una sola base de código.'
+    - 'Backend con Node.js y PostgreSQL para las tarjetas y los perfiles.'
+    - 'Docker para empaquetar los servicios en desarrollo y despliegue.'
   en:
-    - "React Native with TypeScript to cover iOS and Android from a single codebase."
-    - "Node.js and PostgreSQL backend for cards and profiles."
-    - "Docker to package services for development and deployment."
+    - 'React Native with TypeScript to cover iOS and Android from a single codebase.'
+    - 'Node.js and PostgreSQL backend for cards and profiles.'
+    - 'Docker to package services for development and deployment.'
 result:
   es: Publicada en Google Play y disponible para instalar.
   en: Published on Google Play and available to install.

@@ -13,27 +13,50 @@ const t = useUI(locale);
 
 <button
 	type="button"
-	id="theme-toggle"
+	data-theme-toggle
 	data-light-label={t.theme.light}
 	data-dark-label={t.theme.dark}
 	aria-label={t.theme.light}
-	class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-neutral-700 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+	aria-pressed="false"
+	class="inline-flex h-11 w-11 items-center justify-center border border-transparent text-ink transition-colors hover:border-line hover:bg-surface"
 >
 	<Icon name="sun" size={18} class="hidden dark:block" />
 	<Icon name="moon" size={18} class="block dark:hidden" />
 </button>
 
 <script>
-	const button = document.getElementById('theme-toggle');
-	if (button instanceof HTMLButtonElement) {
+	function initThemeToggle() {
+		const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+		if (!button) return;
+
+		const sync = () => {
+			const dark = document.documentElement.dataset.theme === 'dark';
+			button.setAttribute('aria-pressed', String(dark));
+			button.setAttribute(
+				'aria-label',
+				dark ? (button.dataset.darkLabel ?? '') : (button.dataset.lightLabel ?? '')
+			);
+		};
+
+		sync();
+
+		if (button.dataset.bound === 'true') return;
+		button.dataset.bound = 'true';
+
 		button.addEventListener('click', () => {
 			const dark = document.documentElement.dataset.theme !== 'dark';
 			document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-			localStorage.setItem('theme', dark ? 'dark' : 'light');
-			button.setAttribute(
-				'aria-label',
-				dark ? button.dataset.darkLabel ?? '' : button.dataset.lightLabel ?? ''
-			);
+			try {
+				localStorage.setItem('theme', dark ? 'dark' : 'light');
+			} catch {
+				/* storage no disponible */
+			}
+			sync();
+			document.dispatchEvent(new CustomEvent('portfolio:themechange'));
 		});
 	}
+
+	initThemeToggle();
+	document.addEventListener('astro:page-load', initThemeToggle);
+	document.addEventListener('portfolio:themechange', initThemeToggle);
 </script>

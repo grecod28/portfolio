@@ -33,13 +33,13 @@ problem:
   en: The agency needed a fast, low-maintenance site without ongoing server costs. Content had to be updated for every campaign without depending on a technical team.
 decisions:
   es:
-    - "Astro genera un sitio totalmente estático: HTML y CSS, sin servidor que mantener."
-    - "Despliegue en AWS S3 + CloudFront para servir el contenido desde una CDN con HTTPS."
-    - "GitHub Actions publica automáticamente cada cambio de la rama principal."
+    - 'Astro genera un sitio totalmente estático: HTML y CSS, sin servidor que mantener.'
+    - 'Despliegue en AWS S3 + CloudFront para servir el contenido desde una CDN con HTTPS.'
+    - 'GitHub Actions publica automáticamente cada cambio de la rama principal.'
   en:
-    - "Astro generates a fully static site: HTML and CSS, no server to maintain."
-    - "Deployed on AWS S3 + CloudFront to serve content from a CDN with HTTPS."
-    - "GitHub Actions automatically publishes every change on the main branch."
+    - 'Astro generates a fully static site: HTML and CSS, no server to maintain.'
+    - 'Deployed on AWS S3 + CloudFront to serve content from a CDN with HTTPS.'
+    - 'GitHub Actions automatically publishes every change on the main branch.'
 result:
   es: Trabajo real para cliente, en producción en studiok2.es.
   en: Real client work, live at studiok2.es.

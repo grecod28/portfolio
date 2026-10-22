@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Picture } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import { useUI } from '../i18n/ui';
 import { projectDetailPath, type Locale } from '../i18n/utils';
@@ -9,45 +9,83 @@ import Icon from './Icon.astro';
 interface Props {
 	project: CollectionEntry<'projects'>;
 	locale: Locale;
+	variant?: 'default' | 'large';
 }
 
-const { project, locale } = Astro.props;
+const { project, locale, variant = 'default' } = Astro.props;
 const t = useUI(locale);
-const { title, tagline, stack, cover, coverAlt } = project.data;
+const { title, tagline, stack, cover, coverAlt, links } = project.data;
 const coverImage = getCover(cover);
 const href = projectDetailPath(locale, project.id);
-const visibleStack = stack.slice(0, 6);
+const visibleStack = stack.slice(0, variant === 'large' ? 8 : 4);
 const extraCount = stack.length - visibleStack.length;
+const isLarge = variant === 'large';
+const externalLinks = links.slice(0, 2);
+const linkIcon = (kind: string): 'github' | 'external' => (kind === 'repo' ? 'github' : 'external');
 ---
 
-<a
-	href={href}
-	class="group flex h-full flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-xs transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
+<article
+	class:list={[
+		'tilt-card group relative flex h-full flex-col overflow-hidden border border-line bg-surface shadow-paper transition-colors hover:border-accent',
+	]}
 >
-	{
-		coverImage ? (
-			<div class="overflow-hidden border-b border-neutral-200 dark:border-neutral-800">
-				<Image
-					src={coverImage}
-					alt={coverAlt[locale]}
-					width={800}
-					format="webp"
-					quality={80}
-					loading="lazy"
-					class="aspect-16/10 w-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
-				/>
-			</div>
-		) : (
-			<div
-				class="flex aspect-16/10 w-full items-center justify-center border-b border-dashed border-neutral-200 bg-neutral-100 font-mono text-xs text-neutral-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-500"
-			>
+	<a {href} class="absolute inset-0 z-10" aria-label={`${title[locale]} — ${tagline[locale]}`}>
+		<span class="sr-only">{t.projects.viewProject}</span>
+	</a>
+
+	{coverImage ? (
+		<div
+			class="overflow-hidden border-b border-line"
+			transition:name={`project-cover-${project.id}`}
+		>
+			<Picture
+				src={coverImage}
+				alt={coverAlt[locale]}
+				formats={['avif', 'webp']}
+				fallbackFormat="webp"
+				layout="constrained"
+				width={isLarge ? 1200 : 800}
+				height={isLarge ? 750 : 500}
+				loading="lazy"
+				fetchpriority="auto"
+				class="aspect-[16/10] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+			/>
+		</div>
+	) : (
+		<div class="flex aspect-[16/10] w-full items-center justify-center border-b border-dashed border-line bg-paper">
+			<span class="font-mono text-[0.65rem] tracking-wide text-muted uppercase">
 				{t.project.coverPending}
+			</span>
+		</div>
+	)}
+
+	<div class:list={['flex flex-1 flex-col gap-3 p-5 sm:p-6', isLarge ? 'lg:p-8' : '']}>
+		<div class="flex items-start justify-between gap-4">
+			<div>
+				<p class="section-label">
+					{project.data.featured ? t.projects.featured : t.projects.project}
+				</p>
+				<h3
+					class:list={[
+						'mt-1 font-semibold tracking-[-0.03em] text-ink',
+						isLarge ? 'text-2xl sm:text-3xl' : 'text-lg',
+					]}
+				>
+					{title[locale]}
+				</h3>
 			</div>
-		)
-	}
-	<div class="flex flex-1 flex-col gap-3 p-5">
-		<h3 class="text-lg font-semibold tracking-tight">{title[locale]}</h3>
-		<p class="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+			<Icon
+				name="arrow-up-right"
+				size={isLarge ? 24 : 18}
+				class="mt-1 shrink-0 text-muted transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent"
+			/>
+		</div>
+		<p
+			class:list={[
+				'text-pretty text-muted',
+				isLarge ? 'max-w-xl text-base leading-relaxed' : 'text-sm leading-relaxed',
+			]}
+		>
 			{tagline[locale]}
 		</p>
 		<ul class="mt-auto flex flex-wrap gap-1.5 pt-3" aria-label={t.project.stack}>
@@ -56,11 +94,25 @@ const extraCount = stack.length - visibleStack.length;
 			))}
 			{extraCount > 0 && <li class="chip">+{extraCount}</li>}
 		</ul>
-		<span
-			class="inline-flex items-center gap-1.5 pt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400"
-		>
+		<span class="inline-flex items-center gap-1.5 pt-2 font-mono text-[0.65rem] font-semibold tracking-wide text-accent-strong uppercase">
 			{t.projects.viewProject}
-			<Icon name="arrow-right" size={15} class="transition-transform group-hover:translate-x-0.5" />
+			<Icon name="arrow-right" size={14} />
 		</span>
 	</div>
-</a>
+
+	{externalLinks.length > 0 && (
+		<div class="relative z-20 flex flex-wrap gap-2 border-t border-line px-5 py-3 sm:px-6">
+			{externalLinks.map((link) => (
+				<a
+					href={link.url}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="inline-flex min-h-9 items-center gap-1.5 font-mono text-[0.65rem] font-semibold tracking-wide text-muted uppercase transition-colors hover:text-accent-strong"
+				>
+					<Icon name={linkIcon(link.kind)} size={13} />
+					{link.label[locale]}
+				</a>
+			))}
+		</div>
+	)}
+</article>

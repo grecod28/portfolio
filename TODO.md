@@ -5,10 +5,10 @@ Lista de todo lo que Santiago Greco debe completar o confirmar. Cada marcador
 
 ## 1. Experiencia profesional
 
-| Archivo | Qué falta |
-| --- | --- |
+| Archivo                                   | Qué falta                                                           |
+| ----------------------------------------- | ------------------------------------------------------------------- |
 | `src/content/experience/knowmeet-tech.md` | `period` (fechas reales) y `highlights` (logros reales, en ES y EN) |
-| `src/content/experience/dltcode.md` | `period` (fechas reales) y `highlights` (logros reales, en ES y EN) |
+| `src/content/experience/dltcode.md`       | `period` (fechas reales) y `highlights` (logros reales, en ES y EN) |
 
 ## 2. Proyecto Referigo (`src/content/projects/referigo.md`)
 

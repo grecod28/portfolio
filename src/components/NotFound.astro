@@ -5,7 +5,7 @@
 import type { Locale } from '../i18n/utils';
 import { useUI } from '../i18n/ui';
 import { pagePath } from '../i18n/utils';
-import Icon from '../components/Icon.astro';
+import Icon from './Icon.astro';
 
 interface Props {
 	locale: Locale;
@@ -15,11 +15,12 @@ const { locale } = Astro.props;
 const t = useUI(locale);
 ---
 
-<section class="container-page flex flex-col items-center py-24 text-center sm:py-32">
-	<p class="font-mono text-5xl font-bold text-indigo-600 dark:text-indigo-400">404</p>
-	<h1 class="mt-4 text-2xl font-bold tracking-tight">{t.notFound.title}</h1>
-	<p class="mt-2 text-neutral-600 dark:text-neutral-400">{t.notFound.text}</p>
-	<a href={pagePath(locale, 'home')} class="btn-primary mt-8">
+<section class="container-page flex min-h-[60vh] flex-col justify-center py-20">
+	<p class="section-label">Error / 404</p>
+	<h1 class="mt-4 text-hero leading-none font-semibold tracking-[-0.06em]">404</h1>
+	<p class="mt-4 text-2xl font-semibold tracking-tight">{t.notFound.title}</p>
+	<p class="mt-2 max-w-md text-muted">{t.notFound.text}</p>
+	<a href={pagePath(locale, 'home')} class="btn-primary mt-8 self-start">
 		{t.notFound.back}
 		<Icon name="arrow-right" size={16} />
 	</a>

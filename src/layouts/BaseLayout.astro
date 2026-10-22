@@ -1,10 +1,13 @@
 ---
+import { Font } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
 import '../styles/global.css';
 import { SITE } from '../config';
 import { canonicalUrl, translatePath, type Locale } from '../i18n/utils';
 import { useUI } from '../i18n/ui';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import CommandPalette from '../components/CommandPalette.astro';
 
 interface Props {
 	locale: Locale;
@@ -14,6 +17,7 @@ interface Props {
 	description: string;
 	/** Ruta relativa de la imagen Open Graph (1200×630). */
 	image?: string;
+	imageAlt?: string;
 	type?: 'website' | 'article';
 	noindex?: boolean;
 	/** Objetos JSON-LD a inyectar en el head. */
@@ -25,6 +29,7 @@ const {
 	title,
 	description,
 	image = `/og/default-${locale}.png`,
+	imageAlt = title,
 	type = 'website',
 	noindex = false,
 	jsonLd,
@@ -34,8 +39,11 @@ const t = useUI(locale);
 const htmlLang = locale === 'es' ? 'es-ES' : 'en-US';
 const otherLocales = SITE.locales.filter((l) => l !== locale);
 const pathname = Astro.url.pathname;
-const canonical = canonicalUrl(pathname);
-const ogImage = new URL(image, SITE.url).toString();
+const canonicalPath = pathname === '/' ? '/' : pathname.endsWith('/') ? pathname : `${pathname}/`;
+const base = Astro.site ?? SITE.url;
+const canonical = canonicalUrl(canonicalPath, base);
+const docTitle = title.includes(SITE.name) ? title : `${title} · ${SITE.name}`;
+const ogImage = new URL(image, base).toString();
 const ogLocale = locale === 'es' ? 'es_ES' : 'en_US';
 const ld = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 ---
@@ -44,78 +52,99 @@ const ld = Array.isArray(jsonLd) ? jsonLd : jsonLd ? [jsonLd] : [];
 <html lang={htmlLang} data-theme="light">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title} · {SITE.name}</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="color-scheme" content="light dark" />
+		<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#0c1016" media="(prefers-color-scheme: dark)" />
+		<title>{docTitle}</title>
 		<meta name="description" content={description} />
 		<link rel="canonical" href={canonical} />
 		<link rel="alternate" hreflang={htmlLang} href={canonical} />
-		{
-			otherLocales.map((l) => (
-				<link
-					rel="alternate"
-					hreflang={l === 'es' ? 'es-ES' : 'en-US'}
-					href={canonicalUrl(translatePath(pathname, l))}
-				/>
-			))
-		}
+		{otherLocales.map((l) => (
+			<link
+				rel="alternate"
+				hreflang={l === 'es' ? 'es-ES' : 'en-US'}
+				href={canonicalUrl(translatePath(pathname, l), base)}
+			/>
+		))}
 		<link
 			rel="alternate"
 			hreflang="x-default"
-			href={canonicalUrl(translatePath(pathname, SITE.defaultLocale))}
+			href={canonicalUrl(translatePath(pathname, SITE.defaultLocale), base)}
 		/>
 		{noindex && <meta name="robots" content="noindex" />}
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
+		<link rel="manifest" href="/site.webmanifest" />
 		<meta name="generator" content={Astro.generator} />
+
+		<Font cssVariable="--font-inter" preload />
+		<Font cssVariable="--font-jetbrains-mono" />
 
 		<meta property="og:site_name" content={SITE.name} />
 		<meta property="og:type" content={type} />
 		<meta property="og:locale" content={ogLocale} />
-		{
-			otherLocales.map((l) => (
-				<meta property="og:locale:alternate" content={l === 'es' ? 'es_ES' : 'en_US'} />
-			))
-		}
-		<meta property="og:title" content={title} />
+		{otherLocales.map((l) => (
+			<meta property="og:locale:alternate" content={l === 'es' ? 'es_ES' : 'en_US'} />
+		))}
+		<meta property="og:title" content={docTitle} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={canonical} />
 		<meta property="og:image" content={ogImage} />
 		<meta property="og:image:width" content="1200" />
 		<meta property="og:image:height" content="630" />
-		<meta property="og:image:alt" content={title} />
+		<meta property="og:image:alt" content={imageAlt} />
 
 		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content={title} />
+		<meta name="twitter:title" content={docTitle} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={ogImage} />
+		<meta name="twitter:image:alt" content={imageAlt} />
 
-		{
-			ld.map((obj) => (
-				<script type="application/ld+json" set:html={JSON.stringify(obj)} />
-			))
-		}
+		{ld.map((obj) => (
+			<script type="application/ld+json" set:html={JSON.stringify(obj)} />
+		))}
 
 		<script is:inline>
 			(function () {
-				var stored = localStorage.getItem('theme');
-				var dark = stored
-					? stored === 'dark'
-					: window.matchMedia('(prefers-color-scheme: dark)').matches;
-				document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+				function storedTheme() {
+					try {
+						return localStorage.getItem('theme');
+					} catch {
+						return null;
+					}
+				}
+				function applyTheme() {
+					const stored = storedTheme();
+					const dark = stored
+						? stored === 'dark'
+						: window.matchMedia('(prefers-color-scheme: dark)').matches;
+					document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+				}
+				applyTheme();
+				document.addEventListener('astro:after-swap', applyTheme);
+				window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+					if (!storedTheme()) applyTheme();
+				});
 			})();
 		</script>
+		<ClientRouter />
 	</head>
 	<body class="flex min-h-dvh flex-col font-sans">
 		<a
 			href="#main"
-			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-100 focus:rounded-lg focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+			class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-100 focus:border focus:border-accent focus:bg-surface focus:px-4 focus:py-3 focus:font-mono focus:text-xs focus:font-semibold focus:tracking-wide focus:text-ink focus:uppercase"
 		>
 			{t.skipToContent}
 		</a>
-		<Header locale={locale} />
-		<main id="main" class="flex-1">
+		<Header {locale} />
+		<main id="main" tabindex="-1" class="flex-1">
 			<slot />
 		</main>
-		<Footer locale={locale} />
+		<Footer {locale} />
+		<CommandPalette {locale} />
+		<script>
+			import '../scripts/motion';
+		</script>
 	</body>
 </html>

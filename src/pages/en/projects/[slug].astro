@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import { getCollection, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import ProjectDetail from '../../../components/pages/ProjectDetail.astro';
@@ -15,16 +16,17 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props as { project: CollectionEntry<'projects'> };
 const locale = 'en' as const;
-const image = project.data.cover ? `/images/projects/${project.id}.png` : '/og/default-en.png';
+const image = project.data.cover ? `/og/projects/${project.id}-en.png` : '/og/default-en.png';
 ---
 
 <BaseLayout
-	locale={locale}
+	{locale}
 	title={project.data.title.en}
 	description={project.data.tagline.en}
 	type="article"
-	image={image}
+	{image}
+	imageAlt={project.data.tagline.en}
 	jsonLd={projectJsonLd(project, locale, canonicalUrl(Astro.url.pathname))}
 >
-	<ProjectDetail locale={locale} project={project} />
+	<ProjectDetail {locale} {project} />
 </BaseLayout>
