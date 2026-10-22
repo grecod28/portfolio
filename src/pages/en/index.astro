@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Home from '../../components/pages/Home.astro';
+import { useUI } from '../../i18n/ui';
+import { canonicalUrl } from '../../i18n/utils';
+import { personJsonLd } from '../../lib/jsonld';
+
+const locale = 'en' as const;
+const t = useUI(locale);
+---
+
+<BaseLayout
+	locale={locale}
+	title={t.home.title}
+	description={t.home.description}
+	image="/og/home-en.png"
+	jsonLd={personJsonLd(canonicalUrl(Astro.url.pathname), locale)}
+>
+	<Home locale={locale} />
+</BaseLayout>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NotFound from '../components/NotFound.astro';
+import { getLocaleFromUrl } from '../i18n/utils';
+import { useUI } from '../i18n/ui';
+
+const locale = getLocaleFromUrl(Astro.url.pathname);
+const t = useUI(locale);
+---
+
+<BaseLayout locale={locale} title={t.notFound.title} description={t.notFound.text} noindex>
+	<NotFound locale={locale} />
+</BaseLayout>

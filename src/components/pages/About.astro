@@ -1,0 +1,105 @@
+---
+/**
+ * Página "Sobre mí" (compartida entre /es y /en).
+ */
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { useUI } from '../../i18n/ui';
+import type { Locale } from '../../i18n/utils';
+import foto from '../../assets/images/foto_perfil.png';
+import InitiativeSection from '../InitiativeSection.astro';
+import Icon from '../Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+
+const experience = (await getCollection('experience')).sort(
+	(a, b) => a.data.order - b.data.order
+);
+
+const dotClass: Record<string, string> = {
+	done: 'bg-emerald-500',
+	active: 'bg-indigo-500',
+	prep: 'bg-amber-400',
+};
+---
+
+<section class="container-page py-12 sm:py-16">
+	<div class="grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+		<div class="animate-rise max-w-2xl space-y-6">
+			<h1 class="text-3xl font-extrabold tracking-tight sm:text-4xl">{t.about.title}</h1>
+			<p class="text-lg leading-relaxed text-neutral-700 dark:text-neutral-300">
+				{t.about.intro1}
+			</p>
+			<p class="leading-relaxed text-neutral-600 dark:text-neutral-400">{t.about.intro2}</p>
+		</div>
+		<Image
+			src={foto}
+			alt={locale === 'es' ? 'Retrato de Santiago Greco' : 'Portrait of Santiago Greco'}
+			width={384}
+			format="webp"
+			quality={80}
+			loading="lazy"
+			class="animate-rise mx-auto block w-56 rounded-3xl border border-neutral-200 shadow-md sm:w-64 lg:w-72 lg:justify-self-end dark:border-neutral-800"
+			style="animation-delay: 100ms"
+		/>
+	</div>
+
+	<section aria-labelledby="education" class="mt-16 sm:mt-20">
+		<h2 id="education" class="text-2xl font-bold tracking-tight">{t.about.educationTitle}</h2>
+		<ol class="relative mt-8 space-y-10 border-l-2 border-neutral-200 pl-7 dark:border-neutral-800">
+			{t.about.education.map((item) => (
+				<li class="relative">
+					<span
+						class={`absolute top-1 -left-[35px] flex h-4 w-4 rounded-full ring-4 ring-white dark:ring-neutral-950 ${dotClass[item.status]}`}
+						aria-hidden="true"
+					>
+					</span>
+					<p class="font-mono text-xs font-semibold tracking-[0.15em] text-indigo-600 uppercase dark:text-indigo-400">
+						{item.period}
+					</p>
+					<h3 class="mt-1.5 font-semibold tracking-tight">{item.title}</h3>
+					<p class="mt-1.5 max-w-2xl text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+						{item.detail}
+					</p>
+				</li>
+			))}
+		</ol>
+	</section>
+
+	<section aria-labelledby="experience" class="mt-16 sm:mt-20">
+		<h2 id="experience" class="text-2xl font-bold tracking-tight">{t.about.experienceTitle}</h2>
+		<ul class="mt-8 space-y-4">
+			{experience.map((job) => (
+				<li class="card p-6">
+					<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+						<h3 class="font-semibold tracking-tight">{job.data.company}</h3>
+						<span class="font-mono text-xs text-neutral-500 dark:text-neutral-500">
+							{job.data.period}
+						</span>
+					</div>
+					<p class="mt-1 text-sm text-neutral-600 dark:text-neutral-400">
+						{job.data.role[locale]}
+					</p>
+					<ul class="mt-4 space-y-2">
+						{job.data.highlights[locale].map((highlight) => (
+							<li class="flex gap-2.5 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
+								<Icon name="check" size={15} class="mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+								<span>{highlight}</span>
+							</li>
+						))}
+					</ul>
+				</li>
+			))}
+		</ul>
+		<p class="mt-4 font-mono text-xs text-neutral-500 dark:text-neutral-500">
+			{t.about.experienceNote}
+		</p>
+	</section>
+</section>
+
+<InitiativeSection locale={locale} />

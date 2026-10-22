@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Contact from '../../components/pages/Contact.astro';
+import { useUI } from '../../i18n/ui';
+
+const locale = 'en' as const;
+const t = useUI(locale);
+---
+
+<BaseLayout
+	locale={locale}
+	title={t.contact.title}
+	description={t.contact.description}
+	image="/og/contact-en.png"
+>
+	<Contact locale={locale} />
+</BaseLayout>

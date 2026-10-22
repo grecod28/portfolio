@@ -1,0 +1,107 @@
+---
+import { SITE } from '../config';
+import { useUI } from '../i18n/ui';
+import { pagePath, type Locale, type PageKey } from '../i18n/utils';
+import Icon from './Icon.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import LangPicker from './LangPicker.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+const pathname = Astro.url.pathname;
+const home = pagePath(locale, 'home');
+
+const navItems: { key: PageKey; label: string }[] = [
+	{ key: 'home', label: t.nav.home },
+	{ key: 'projects', label: t.nav.projects },
+	{ key: 'about', label: t.nav.about },
+	{ key: 'stack', label: t.nav.stack },
+	{ key: 'contact', label: t.nav.contact },
+];
+
+const isActive = (key: PageKey) =>
+	key === 'home' ? pathname === home : pathname.startsWith(pagePath(locale, key));
+
+const linkClass = (active: boolean) =>
+	`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+		active
+			? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white'
+			: 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white'
+	}`;
+---
+
+<header
+	class="sticky top-0 z-50 border-b border-neutral-200/70 bg-white/80 backdrop-blur-md dark:border-neutral-800/70 dark:bg-neutral-950/80"
+>
+	<div class="container-page flex h-16 items-center justify-between gap-3">
+		<a href={home} class="flex shrink-0 items-center gap-2.5" aria-label={SITE.name}>
+			<span
+				class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white"
+			>
+				SG
+			</span>
+			<span class="hidden text-[15px] font-semibold tracking-tight sm:block">{SITE.name}</span>
+		</a>
+
+		<nav aria-label="Principal" class="hidden items-center gap-1 md:flex">
+			{navItems.map((item) => (
+				<a href={pagePath(locale, item.key)} class={linkClass(isActive(item.key))} aria-current={isActive(item.key) ? 'page' : undefined}>
+					{item.label}
+				</a>
+			))}
+		</nav>
+
+		<div class="flex items-center gap-2">
+			<ThemeToggle locale={locale} />
+			<LangPicker locale={locale} currentPath={pathname} />
+			<a href={SITE.cv} download class="btn-primary hidden px-3 py-2 lg:inline-flex">
+				<Icon name="download" size={16} />
+				{t.downloadCv}
+			</a>
+
+			<details class="relative md:hidden" data-menu>
+				<summary
+					class="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg text-neutral-700 transition-colors hover:bg-neutral-100 [&::-webkit-details-marker]:hidden dark:text-neutral-300 dark:hover:bg-neutral-800"
+					aria-label={t.openMenu}
+				>
+					<Icon name="menu" size={20} />
+				</summary>
+				<div
+					class="absolute top-full right-0 mt-2 w-52 rounded-xl border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+				>
+					{navItems.map((item) => (
+						<a
+							href={pagePath(locale, item.key)}
+							aria-current={isActive(item.key) ? 'page' : undefined}
+							class="block rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+						>
+							{item.label}
+						</a>
+					))}
+					<a
+						href={SITE.cv}
+						download
+						class="mt-1 flex items-center gap-2 rounded-lg border-t border-neutral-200 px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-800"
+					>
+						<Icon name="download" size={16} />
+						{t.downloadCv}
+					</a>
+				</div>
+			</details>
+		</div>
+	</div>
+</header>
+
+<script>
+	// Cierra el menú móvil (<details>) al pulsar un enlace.
+	document.querySelectorAll('[data-menu] a').forEach((link) => {
+		link.addEventListener('click', () => {
+			const details = link.closest('details');
+			if (details) details.removeAttribute('open');
+		});
+	});
+</script>

@@ -1,0 +1,39 @@
+---
+import { useUI } from '../i18n/ui';
+import type { Locale } from '../i18n/utils';
+import Icon from './Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+---
+
+<button
+	type="button"
+	id="theme-toggle"
+	data-light-label={t.theme.light}
+	data-dark-label={t.theme.dark}
+	aria-label={t.theme.light}
+	class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-neutral-700 transition-colors hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800"
+>
+	<Icon name="sun" size={18} class="hidden dark:block" />
+	<Icon name="moon" size={18} class="block dark:hidden" />
+</button>
+
+<script>
+	const button = document.getElementById('theme-toggle');
+	if (button instanceof HTMLButtonElement) {
+		button.addEventListener('click', () => {
+			const dark = document.documentElement.dataset.theme !== 'dark';
+			document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+			localStorage.setItem('theme', dark ? 'dark' : 'light');
+			button.setAttribute(
+				'aria-label',
+				dark ? button.dataset.darkLabel ?? '' : button.dataset.lightLabel ?? ''
+			);
+		});
+	}
+</script>

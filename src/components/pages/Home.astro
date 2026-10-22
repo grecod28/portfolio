@@ -1,0 +1,137 @@
+---
+/**
+ * Página de inicio (compartida entre /es y /en).
+ */
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { useUI } from '../../i18n/ui';
+import { pagePath, projectsIndexPath, type Locale } from '../../i18n/utils';
+import foto from '../../assets/images/foto_perfil.png';
+import ProjectCard from '../ProjectCard.astro';
+import SectionHeading from '../SectionHeading.astro';
+import InitiativeSection from '../InitiativeSection.astro';
+import Icon from '../Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+
+const featured = (await getCollection('projects', ({ data }) => data.featured))
+	.sort((a, b) => a.data.order - b.data.order)
+	.slice(0, 3);
+
+const projectsPath = projectsIndexPath(locale);
+const contactPath = pagePath(locale, 'contact');
+---
+
+<section class="border-b border-neutral-200 dark:border-neutral-800">
+	<div class="container-page grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-[1.15fr_0.85fr]">
+		<div class="animate-rise space-y-7">
+			<p
+				class="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1.5 font-mono text-xs text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
+			>
+				<span class="relative flex h-2 w-2" aria-hidden="true">
+					<span class="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+					<span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+				</span>
+				{t.home.status}
+			</p>
+			<h1
+				class="text-4xl font-extrabold tracking-tight text-balance sm:text-5xl"
+			>
+				{t.home.heroTitle}
+			</h1>
+			<p class="max-w-xl text-lg leading-relaxed text-neutral-600 dark:text-neutral-400">
+				{t.home.heroSubtitle}
+			</p>
+			<div class="flex flex-wrap gap-3 pt-1">
+				<a href={projectsPath} class="btn-primary">
+					{t.home.ctaProjects}
+					<Icon name="arrow-right" size={16} />
+				</a>
+				<a href={contactPath} class="btn-secondary">{t.home.ctaContact}</a>
+			</div>
+		</div>
+		<div class="animate-rise flex justify-center lg:flex" style="animation-delay: 120ms">
+			<Image
+				src={foto}
+				alt={t.home.photoAlt}
+				width={448}
+				format="webp"
+				quality={80}
+				loading="eager"
+				fetchpriority="high"
+				class="aspect-square w-56 rounded-3xl border border-neutral-200 object-cover shadow-lg sm:w-64 xl:w-96 dark:border-neutral-800"
+			/>
+		</div>
+	</div>
+</section>
+
+<section class="bg-neutral-50/70 dark:bg-neutral-900/30">
+	<div class="container-page py-16 sm:py-20">
+		<div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+			<SectionHeading
+				eyebrow={t.home.featuredEyebrow}
+				title={t.home.featuredTitle}
+				subtitle={t.home.featuredSubtitle}
+			/>
+			<a href={projectsPath} class="btn-secondary shrink-0">
+				{t.home.viewAll}
+				<Icon name="arrow-right" size={16} />
+			</a>
+		</div>
+		<ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			{featured.map((project) => (
+				<li class="h-full">
+					<ProjectCard project={project} locale={locale} />
+				</li>
+			))}
+		</ul>
+	</div>
+</section>
+
+<section class="container-page py-16 sm:py-20">
+	<SectionHeading eyebrow={t.home.educationEyebrow} title={t.home.educationTitle} />
+	<ul
+		class="mt-8 divide-y divide-neutral-200 rounded-2xl border border-neutral-200 bg-white dark:divide-neutral-800 dark:border-neutral-800 dark:bg-neutral-900"
+	>
+		{t.home.educationItems.map((item) => (
+			<li
+				class="flex flex-col gap-1.5 px-6 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+			>
+				<span class="font-medium">{item.title}</span>
+				<span class="shrink-0 font-mono text-xs text-indigo-600 dark:text-indigo-400">
+					{item.meta}
+				</span>
+			</li>
+		))}
+	</ul>
+</section>
+
+<InitiativeSection locale={locale} />
+
+<section class="container-page pb-20 sm:pb-28">
+	<div class="rounded-3xl bg-indigo-600 px-6 py-14 text-center sm:px-12">
+		<h2 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+			{t.home.finalCtaTitle}
+		</h2>
+		<p class="mx-auto mt-3 max-w-xl text-indigo-100">{t.home.finalCtaText}</p>
+		<div class="mt-8 flex flex-wrap justify-center gap-3">
+			<a
+				href={contactPath}
+				class="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-indigo-700 transition-colors hover:bg-indigo-50"
+			>
+				{t.home.finalCtaPrimary}
+			</a>
+			<a
+				href={projectsPath}
+				class="inline-flex items-center gap-2 rounded-lg border border-white/40 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500"
+			>
+				{t.home.finalCtaSecondary}
+			</a>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,26 @@
+---
+/**
+ * Página 404 compartida (usada por 404.astro, es/404.astro y en/404.astro).
+ */
+import type { Locale } from '../i18n/utils';
+import { useUI } from '../i18n/ui';
+import { pagePath } from '../i18n/utils';
+import Icon from '../components/Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+---
+
+<section class="container-page flex flex-col items-center py-24 text-center sm:py-32">
+	<p class="font-mono text-5xl font-bold text-indigo-600 dark:text-indigo-400">404</p>
+	<h1 class="mt-4 text-2xl font-bold tracking-tight">{t.notFound.title}</h1>
+	<p class="mt-2 text-neutral-600 dark:text-neutral-400">{t.notFound.text}</p>
+	<a href={pagePath(locale, 'home')} class="btn-primary mt-8">
+		{t.notFound.back}
+		<Icon name="arrow-right" size={16} />
+	</a>
+</section>

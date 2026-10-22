@@ -1,0 +1,17 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Projects from '../../../components/pages/Projects.astro';
+import { useUI } from '../../../i18n/ui';
+
+const locale = 'es' as const;
+const t = useUI(locale);
+---
+
+<BaseLayout
+	locale={locale}
+	title={t.projects.title}
+	description={t.projects.description}
+	image="/og/projects-es.png"
+>
+	<Projects locale={locale} />
+</BaseLayout>

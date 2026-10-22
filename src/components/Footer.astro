@@ -1,0 +1,67 @@
+---
+import { SITE } from '../config';
+import { useUI } from '../i18n/ui';
+import type { Locale } from '../i18n/utils';
+import Icon from './Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+const year = new Date().getFullYear();
+const tagline =
+	locale === 'es' ? 'Desarrollador de software · España' : 'Software developer · Spain';
+
+const socialItems = [
+	{ name: 'linkedin', label: 'LinkedIn', href: SITE.social.linkedin },
+	{ name: 'github', label: 'GitHub', href: SITE.social.github },
+	{ name: 'mail', label: SITE.email, href: `mailto:${SITE.email}` },
+] as const;
+---
+
+<footer class="border-t border-neutral-200 dark:border-neutral-800">
+	<div class="container-page grid gap-10 py-12 md:grid-cols-3">
+		<div class="space-y-3">
+			<div class="flex items-center gap-2.5">
+				<span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 font-mono text-sm font-bold text-white">
+					SG
+				</span>
+				<span class="font-semibold tracking-tight">{SITE.name}</span>
+			</div>
+			<p class="text-sm text-neutral-600 dark:text-neutral-400">{tagline}</p>
+		</div>
+
+		<nav aria-label="Redes sociales">
+			<ul class="space-y-2.5">
+				{
+					socialItems.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								class="inline-flex items-center gap-2.5 text-sm text-neutral-600 transition-colors hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+							>
+								<Icon name={item.name} size={16} class="text-neutral-400" />
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+
+		<div class="space-y-3">
+			<p class="text-sm text-neutral-600 dark:text-neutral-400">{t.footer.madeWith}</p>
+			<a href={SITE.cv} download class="btn-secondary">
+				<Icon name="download" size={16} />
+				{t.downloadCv}
+			</a>
+		</div>
+	</div>
+	<div
+		class="border-t border-neutral-200 py-5 text-center text-sm text-neutral-500 dark:border-neutral-800 dark:text-neutral-500"
+	>
+		© {year} {SITE.name}. {t.footer.rights}
+	</div>
+</footer>

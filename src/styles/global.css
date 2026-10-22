@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+
+/* Tema oscuro controlado por el atributo data-theme en <html>. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, 'Cascadia Code', Menlo, monospace;
+}
+
+html {
+	color-scheme: light;
+}
+
+html[data-theme='dark'] {
+	color-scheme: dark;
+}
+
+body {
+	@apply bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100;
+}
+
+::selection {
+	@apply bg-indigo-600 text-white;
+}
+
+:focus-visible {
+	outline: 2px solid var(--color-indigo-500);
+	outline-offset: 2px;
+	border-radius: 2px;
+}
+
+/* Animación de entrada sutil; desactivada si el usuario lo pide. */
+@media (prefers-reduced-motion: no-preference) {
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.animate-rise {
+		animation: rise 0.5s ease-out both;
+	}
+}
+
+/* Utilidades compartidas. */
+@utility container-page {
+	@apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+}
+
+@utility card {
+	@apply rounded-2xl border border-neutral-200 bg-white shadow-xs dark:border-neutral-800 dark:bg-neutral-900;
+}
+
+@utility chip {
+	@apply inline-flex items-center rounded-md border border-neutral-200 bg-neutral-50 px-2 py-0.5 font-mono text-xs text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300;
+}
+
+@utility btn-primary {
+	@apply inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-500;
+}
+
+@utility btn-secondary {
+	@apply inline-flex items-center justify-center gap-2 rounded-lg border border-neutral-300 px-4 py-2.5 text-sm font-semibold text-neutral-800 transition-colors hover:border-neutral-400 hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-100 dark:hover:border-neutral-600 dark:hover:bg-neutral-900;
+}
+
+@utility input {
+	@apply w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-indigo-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:border-indigo-400;
+}
+
+@utility section-h2 {
+	@apply text-lg font-bold tracking-tight;
+}
