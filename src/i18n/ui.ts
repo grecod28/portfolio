@@ -165,7 +165,7 @@ export const ui = {
 			description:
 				'Historia, formación y experiencia de Santiago Greco: DAW con Matrícula de Honor, especialización en Big Data e IA en curso y proyectos propios en producción.',
 			intro1:
-				'Soy Santiago Greco, desarrollador de software en España. Terminé el Grado Superior de Desarrollo de Aplicaciones Web (DAW) con Matrícula de Honor (9,47/10) y ahora curso la especialización en Big Data e Inteligencia Artificial.',
+				'Desarrollador web con Matrícula de Honor, con experiencia en APIs REST, interfaces con Next.js y CI/CD en entorno ágil. Constante, con ganas de aprender de trabajar en equipo; sigo formándome enBig Data e IA. Busco incorporarme a un equipo donde pueda seguir creciendo como profesional.',
 			intro2:
 				'Construyo productos propios de principio a fin: los diseño, los despliego y los mantengo. Esa combinación de base de ingeniería de software y orientación a datos e IA es la que quiero seguir desarrollando.',
 			educationTitle: 'Formación',
@@ -400,7 +400,7 @@ export const ui = {
 			description:
 				'Santiago Greco’s background, education and experience: DAW with Honors, Big Data & AI specialization in progress and personal products in production.',
 			intro1:
-				'I’m Santiago Greco, a software developer based in Spain. I finished the Higher National Diploma in Web Application Development (DAW) with Honors (9.47/10) and I’m now studying the Big Data & Artificial Intelligence specialization.',
+				'Web developer with top academic honors, experienced in REST APIs, Next.js interfaces, and CI/CD within an agile environment. I am persistent, eager to learn, and enjoy working as part of a team; I am also continuing my professional development in Big Data and AI. I am looking to join a team where I can continue to grow professionally.',
 			intro2:
 				'I build my own products end to end: I design them, deploy them and maintain them. That mix of software engineering fundamentals and a data & AI direction is what I want to keep growing.',
 			educationTitle: 'Education',
