@@ -1,0 +1,11 @@
+dist
+.astro
+node_modules
+infra/cdk.out
+playwright-report
+test-results
+.lighthouseci
+coverage
+pnpm-lock.yaml
+public/og
+public/images/projects

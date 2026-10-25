@@ -1,0 +1,112 @@
+---
+import { SITE } from '../config';
+import { useUI } from '../i18n/ui';
+import { pagePath, type Locale, type PageKey } from '../i18n/utils';
+import Icon from './Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+const year = new Date().getFullYear();
+const tagline =
+	locale === 'es' ? 'Desarrollador de software · España' : 'Software developer · Spain';
+
+const socialItems = [
+	{ name: 'linkedin', label: 'LinkedIn', href: SITE.social.linkedin },
+	{ name: 'github', label: 'GitHub', href: SITE.social.github },
+	{ name: 'mail', label: SITE.email, href: `mailto:${SITE.email}` },
+] as const;
+
+const navItems: { key: PageKey; label: string }[] = [
+	{ key: 'projects', label: t.nav.projects },
+	{ key: 'about', label: t.nav.about },
+	{ key: 'stack', label: t.nav.stack },
+	{ key: 'contact', label: t.nav.contact },
+];
+---
+
+<footer class="border-t border-line bg-surface/60">
+	<div class="container-page grid gap-10 py-14 md:grid-cols-12">
+		<div class="space-y-4 md:col-span-5">
+			<div class="flex items-center gap-3">
+				<span class="blueprint-frame flex h-10 w-10 items-center justify-center bg-accent text-sm font-bold text-white">
+					SG
+				</span>
+				<div>
+					<p class="font-semibold tracking-tight">{SITE.name}</p>
+					<p class="font-mono text-[0.62rem] tracking-[0.18em] text-muted uppercase">{tagline}</p>
+				</div>
+			</div>
+			<p class="max-w-sm text-sm leading-relaxed text-muted">{t.footer.note}</p>
+			<button
+				type="button"
+				data-command-open
+				class="inline-flex min-h-11 items-center gap-2 border border-line bg-paper px-3 font-mono text-[0.65rem] font-semibold tracking-wide text-muted uppercase transition-colors hover:border-accent hover:text-accent-strong"
+			>
+				<Icon name="command" size={14} />
+				<span class="sr-only">{t.command.open}</span>
+				{t.footer.commandHint}
+			</button>
+		</div>
+
+		<nav aria-label={t.footer.navigation} class="md:col-span-3">
+			<p class="section-label">{t.footer.navigation}</p>
+			<ul class="mt-4 space-y-1">
+				{navItems.map((item) => (
+					<li>
+						<a
+							href={pagePath(locale, item.key)}
+							class="inline-flex min-h-9 items-center text-sm text-muted transition-colors hover:text-ink"
+						>
+							{item.label}
+						</a>
+					</li>
+				))}
+			</ul>
+		</nav>
+
+		<nav aria-label={t.footer.social} class="md:col-span-4">
+			<p class="section-label">{t.footer.social}</p>
+			<ul class="mt-4 space-y-1">
+				{socialItems.map((item) => (
+					<li>
+						<a
+							href={item.href}
+							class="inline-flex min-h-9 items-center gap-2.5 text-sm text-muted transition-colors hover:text-ink"
+							target={item.name === 'mail' ? undefined : '_blank'}
+							rel={item.name === 'mail' ? undefined : 'noopener noreferrer'}
+						>
+							<Icon name={item.name} size={16} class="text-muted" />
+							{item.label}
+						</a>
+					</li>
+				))}
+			</ul>
+			<a href={SITE.cv} download class="btn-secondary mt-5">
+				<Icon name="download" size={15} />
+				{t.downloadCv}
+			</a>
+		</nav>
+	</div>
+
+	<div class="border-t border-line">
+		<div class="container-page flex flex-col gap-3 py-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+			<p>
+				© {year} {SITE.name}. {t.footer.rights}
+			</p>
+			<div class="flex items-center gap-4">
+				<p class="font-mono text-[0.62rem] tracking-wide uppercase">{t.footer.madeWith}</p>
+				<a
+					href="#main"
+					class="inline-flex min-h-9 items-center gap-1.5 font-mono text-[0.62rem] tracking-wide uppercase transition-colors hover:text-ink"
+				>
+					<Icon name="arrow-up" size={13} />
+					{t.footer.backToTop}
+				</a>
+			</div>
+		</div>
+	</div>
+</footer>

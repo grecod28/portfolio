@@ -1,0 +1,18 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Contact from '../../components/pages/Contact.astro';
+import { useUI } from '../../i18n/ui';
+
+const locale = 'es' as const;
+const t = useUI(locale);
+---
+
+<BaseLayout
+	{locale}
+	title={t.contact.title}
+	description={t.contact.description}
+	image="/og/contact-es.png"
+>
+	<Contact {locale} />
+</BaseLayout>

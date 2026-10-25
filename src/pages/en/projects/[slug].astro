@@ -1,0 +1,32 @@
+---
+export const prerender = true;
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ProjectDetail from '../../../components/pages/ProjectDetail.astro';
+import { canonicalUrl } from '../../../i18n/utils';
+import { projectJsonLd } from '../../../lib/jsonld';
+
+export async function getStaticPaths() {
+	const projects = await getCollection('projects');
+	return projects.map((project) => ({
+		params: { slug: project.id },
+		props: { project },
+	}));
+}
+
+const { project } = Astro.props as { project: CollectionEntry<'projects'> };
+const locale = 'en' as const;
+const image = project.data.cover ? `/og/projects/${project.id}-en.png` : '/og/default-en.png';
+---
+
+<BaseLayout
+	{locale}
+	title={project.data.title.en}
+	description={project.data.tagline.en}
+	type="article"
+	{image}
+	imageAlt={project.data.tagline.en}
+	jsonLd={projectJsonLd(project, locale, canonicalUrl(Astro.url.pathname))}
+>
+	<ProjectDetail {locale} {project} />
+</BaseLayout>

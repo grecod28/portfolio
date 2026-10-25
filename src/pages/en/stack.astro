@@ -1,0 +1,18 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Stack from '../../components/pages/Stack.astro';
+import { useUI } from '../../i18n/ui';
+
+const locale = 'en' as const;
+const t = useUI(locale);
+---
+
+<BaseLayout
+	{locale}
+	title={t.stack.title}
+	description={t.stack.description}
+	image="/og/stack-en.png"
+>
+	<Stack {locale} />
+</BaseLayout>

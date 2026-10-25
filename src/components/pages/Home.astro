@@ -1,0 +1,215 @@
+---
+/**
+ * Página de inicio (compartida entre /es y /en).
+ */
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import { SITE } from '../../config';
+import { useUI } from '../../i18n/ui';
+import { pagePath, projectsIndexPath, type Locale } from '../../i18n/utils';
+import foto from '../../assets/images/foto_perfil.png';
+import ProjectCard from '../ProjectCard.astro';
+import SectionHeading from '../SectionHeading.astro';
+import InitiativeSection from '../InitiativeSection.astro';
+import Icon from '../Icon.astro';
+
+interface Props {
+	locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useUI(locale);
+
+const featured = (await getCollection('projects', ({ data }) => data.featured))
+	.sort((a, b) => a.data.order - b.data.order)
+	.slice(0, 3);
+
+const projectsPath = projectsIndexPath(locale);
+const contactPath = pagePath(locale, 'contact');
+---
+
+<section class="relative overflow-hidden border-b border-line" data-spotlight>
+	<div
+		class="pointer-events-none absolute inset-0 opacity-70 [background:radial-gradient(36rem_circle_at_var(--mx,70%)_var(--my,20%),color-mix(in_oklab,var(--color-accent)_13%,transparent),transparent_65%)]"
+		aria-hidden="true"
+	></div>
+	<div class="container-page relative grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-[1.15fr_0.85fr] lg:py-28">
+		<div class="max-w-3xl">
+			<p class="section-label" style="--i: 0">
+				{t.home.heroKicker}
+			</p>
+			<h1
+				class="mt-4 text-hero leading-[0.9] font-semibold tracking-[-0.055em] text-balance"
+				style="--i: 1"
+			>
+				{SITE.name}
+			</h1>
+			<p class="mt-5 text-xl font-medium tracking-tight text-ink" style="--i: 2">
+				{t.home.heroRole}
+				<span class="text-muted"> · TypeScript · Big Data & IA</span>
+			</p>
+			<p
+				class="mt-5 max-w-xl text-pretty text-base leading-relaxed text-muted sm:text-lg"
+				style="--i: 3"
+			>
+				{t.home.heroStatement}
+			</p>
+			<div class="mt-8 flex flex-wrap gap-3" style="--i: 4">
+				<a href={projectsPath} class="btn-primary">
+					{t.home.ctaProjects}
+					<Icon name="arrow-right" size={16} />
+				</a>
+				<a href={SITE.cv} download class="btn-secondary">
+					<Icon name="download" size={15} />
+					{t.home.ctaCv}
+				</a>
+				<a href={contactPath} class="btn-ghost">
+					{t.home.ctaContact}
+				</a>
+			</div>
+			<p
+				class="mt-8 flex items-center gap-2 font-mono text-[0.68rem] tracking-wide text-muted uppercase"
+				style="--i: 5"
+			>
+				<span class="relative flex h-2 w-2" aria-hidden="true">
+					<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-40"></span>
+					<span class="relative inline-flex h-2 w-2 rounded-full bg-ok"></span>
+				</span>
+				{t.home.status}
+			</p>
+		</div>
+
+		<div class="mx-auto hidden w-full max-w-sm md:block lg:justify-self-end" style="--i: 3">
+			<div class="blueprint-frame border border-line bg-surface p-3 shadow-paper">
+				<Picture
+					src={foto}
+					alt={t.home.photoAlt}
+					formats={['avif', 'webp']}
+					fallbackFormat="webp"
+					layout="constrained"
+					width={560}
+					height={700}
+					loading="eager"
+					fetchpriority="high"
+					class="aspect-[4/5] w-full object-cover grayscale-[15%]"
+				/>
+				<div class="mt-3 flex items-center justify-between border-t border-line pt-3">
+					<p class="font-mono text-[0.62rem] tracking-[0.18em] text-muted uppercase">ID / SG-001</p>
+					<p class="font-mono text-[0.62rem] tracking-[0.18em] text-accent-strong uppercase">ES</p>
+				</div>
+				<dl class="mt-3 grid grid-cols-2 gap-3 text-xs">
+					<div>
+						<dt class="font-mono text-[0.6rem] tracking-wide text-muted uppercase">
+							{t.home.idLocation}
+						</dt>
+						<dd class="mt-0.5 font-medium">{t.home.locationValue}</dd>
+					</div>
+					<div>
+						<dt class="font-mono text-[0.6rem] tracking-wide text-muted uppercase">
+							{t.home.idStatus}
+						</dt>
+						<dd class="mt-0.5 font-medium text-ok">{t.home.idAvailability}</dd>
+					</div>
+					<div class="col-span-2">
+						<dt class="font-mono text-[0.6rem] tracking-wide text-muted uppercase">
+							{t.home.idFocus}
+						</dt>
+						<dd class="mt-0.5 font-medium">{t.home.focusValue}</dd>
+					</div>
+				</dl>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="container-page py-section">
+	<div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+		<SectionHeading
+			number="02"
+			eyebrow={t.home.featuredEyebrow}
+			title={t.home.featuredTitle}
+			subtitle={t.home.featuredSubtitle}
+		/>
+		<a href={projectsPath} class="btn-secondary shrink-0">
+			{t.home.viewAll}
+			<Icon name="arrow-right" size={16} />
+		</a>
+	</div>
+	<ul class="grid gap-4 md:grid-cols-4">
+		{featured.map((project, index) => (
+			<li
+				class:list={[
+					'reveal min-h-0',
+					index === 0 ? 'md:col-span-2 md:row-span-2' : 'md:col-span-2 lg:col-span-1',
+				]}
+			>
+				<ProjectCard {project} {locale} variant={index === 0 ? 'large' : 'default'} />
+			</li>
+		))}
+		<li class="reveal md:col-span-2 lg:col-span-1">
+			<div class="flex h-full flex-col justify-between border border-line bg-paper p-6">
+				<div>
+					<p class="section-label">{t.home.idStatus}</p>
+					<p class="mt-3 text-2xl font-semibold tracking-tight">{t.home.statusTitle}</p>
+					<p class="mt-2 text-sm leading-relaxed text-muted">{t.home.statusText}</p>
+				</div>
+				<a
+					href={projectsPath}
+					class="mt-6 inline-flex items-center gap-1.5 font-mono text-[0.65rem] font-semibold tracking-wide text-accent-strong uppercase"
+				>
+					{t.home.statusLink}
+					<Icon name="arrow-right" size={14} />
+				</a>
+			</div>
+		</li>
+	</ul>
+</section>
+
+<section class="border-y border-line bg-surface/50">
+	<div class="container-page grid gap-10 py-section lg:grid-cols-[0.8fr_1.2fr]">
+		<SectionHeading number="03" eyebrow={t.home.educationEyebrow} title={t.home.educationTitle} />
+		<ol class="divide-y divide-line border-y border-line">
+			{t.home.educationItems.map((item, index) => (
+				<li class="grid gap-2 py-5 sm:grid-cols-[3rem_1fr_auto] sm:items-baseline sm:gap-5">
+					<span class="font-mono text-[0.68rem] tracking-[0.16em] text-muted">
+						{String(index + 1).padStart(2, '0')}
+					</span>
+					<span class="font-medium tracking-tight">{item.title}</span>
+					<span class="font-mono text-[0.65rem] tracking-wide text-accent-strong uppercase">
+						{item.meta}
+					</span>
+				</li>
+			))}
+		</ol>
+	</div>
+</section>
+
+<InitiativeSection {locale} />
+
+<section class="container-page pb-section">
+	<div class="grid gap-6 border border-[#1436b8] bg-[#1436b8] p-8 text-white sm:p-12 lg:grid-cols-[1fr_auto] lg:items-end">
+		<div>
+			<p class="font-mono text-[0.68rem] tracking-[0.2em] text-white/70 uppercase">
+				05 / {t.nav.contact}
+			</p>
+			<h2 class="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+				{t.home.finalCtaTitle}
+			</h2>
+			<p class="mt-3 max-w-xl text-pretty text-white/80">{t.home.finalCtaText}</p>
+		</div>
+		<div class="flex flex-wrap gap-3">
+			<a
+				href={contactPath}
+				class="inline-flex min-h-11 items-center gap-2 border border-white bg-white px-4 py-2.5 font-mono text-xs font-semibold tracking-wide text-[#1436b8] uppercase transition-colors hover:bg-paper"
+			>
+				{t.home.finalCtaPrimary}
+			</a>
+			<a
+				href={projectsPath}
+				class="inline-flex min-h-11 items-center gap-2 border border-white/40 px-4 py-2.5 font-mono text-xs font-semibold tracking-wide text-white uppercase transition-colors hover:border-white hover:bg-white/10"
+			>
+				{t.home.finalCtaSecondary}
+			</a>
+		</div>
+	</div>
+</section>

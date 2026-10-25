@@ -1,0 +1,4 @@
+{
+	"app": "pnpm exec tsx infra/bin/app.ts",
+	"context": {}
+}

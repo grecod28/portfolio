@@ -1,0 +1,17 @@
+{
+	"name": "Santiago Greco — Portfolio",
+	"short_name": "SG Portfolio",
+	"description": "Portfolio de Santiago Greco, desarrollador de software.",
+	"start_url": "/es/",
+	"display": "standalone",
+	"background_color": "#F4F1EA",
+	"theme_color": "#1F4BFF",
+	"icons": [
+		{
+			"src": "/favicon.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	]
+}
