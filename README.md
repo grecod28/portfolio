@@ -76,8 +76,12 @@ src/
 1. Crear `src/content/projects/<slug>.md` con el frontmatter tipado (ver los
    existentes como plantilla; todos los campos de texto tienen `es` y `en`).
 2. Añadir la captura en `src/assets/images/projects/<clave>.png` y referenciarla
-   con `cover: <clave>` (las claves viven en `src/lib/covers.ts`).
-3. Para la imagen Open Graph, copiar la captura también a
+   con `cover: <clave>` (las claves viven en `src/lib/project-images.ts`).
+3. Opcional: añadir un diagrama de arquitectura en
+   `src/assets/images/projects/<clave>.png` y referenciarlo con
+   `architecture: <clave>` (las claves viven en
+   `src/lib/project-images.ts`). La sección solo aparece si hay diagrama.
+4. Para la imagen Open Graph, copiar la captura también a
    `public/images/projects/<slug>.png`.
 
 ### Añadir una página

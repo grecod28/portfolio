@@ -52,8 +52,13 @@ const projects = defineCollection({
 		metrics: z.array(z.string()).default([]),
 		/** Decisiones técnicas por documentar (TODO). */
 		technicalNotes: localized(z.array(z.string())).default({ es: [], en: [] }),
-		/** true = mostrar hueco reservado para el diagrama de arquitectura. */
-		architecturePending: z.boolean().default(true),
+		/**
+		 * Clave del diagrama de arquitectura. Debe existir en
+		 * `src/assets/images/projects/` con el mismo nombre.
+		 * Vacío si todavía no hay diagrama (no se muestra la sección).
+		 */
+		architecture: z.string().default(''),
+		architectureAlt: localized(z.string()).default({ es: '', en: '' }),
 	}),
 });
 

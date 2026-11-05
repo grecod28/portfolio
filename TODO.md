@@ -26,9 +26,6 @@ Lista de todo lo que Santiago Greco debe completar o confirmar. Cada marcador
 - `technicalNotes`: documentar las decisiones técnicas pendientes
   (modelo de salas y mensajes, política de caducidad, despliegue del gateway
   WebSocket).
-- Diagrama de arquitectura: `architecturePending: true` muestra un hueco en la
-  ficha. Cuando exista el diagrama, añadirlo (p. ej. como captura) y poner el
-  campo a `false`.
 
 ## 4. CV
 

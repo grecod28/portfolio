@@ -64,5 +64,8 @@ technicalNotes:
     - 'TODO: document how rooms and messages are modeled in PostgreSQL (schema and key indexes).'
     - 'TODO: describe the message retention/expiry policy.'
     - 'TODO: explain how the WebSocket gateway is deployed and how multiple instances would be handled.'
-architecturePending: true
+architecture: umbrachat_arquitectura
+architectureAlt:
+  es: Diagrama de arquitectura de UmbraChat
+  en: UmbraChat architecture diagram
 ---

@@ -85,7 +85,7 @@ src/
 │   ├── BaseLayout.astro      # layout real
 │   └── Layout.astro          # restos del starter de Astro (sin usar)
 ├── lib/
-│   ├── covers.ts             # mapa manual de capturas
+│   ├── project-images.ts     # mapa manual de capturas y diagramas
 │   └── jsonld.ts             # Person + SoftwareSourceCode
 ├── pages/                    # rutas ES/EN, 404 y redirect raíz
 └── styles/global.css         # Tailwind v4 + tema + utilidades
@@ -162,7 +162,7 @@ Ver [TODO.md](../TODO.md). Los más importantes para el rediseño:
 
 1. **`src/layouts/Layout.astro` es un resto del starter de Astro** y no se usa. Eliminar.
 2. **`src/config.ts` duplica `site` de `astro.config.mjs`** (`SITE.url`). Puede desincronizarse. Usar `Astro.site`/`import.meta.env.SITE` como fuente única.
-3. **`src/lib/covers.ts` es un mapa manual** de capturas. Si se añade un proyecto sin actualizar el mapa, el fallo es silencioso. Se puede validar con `image()` en el schema o con un test que cruce proyectos y capturas.
+3. **`src/lib/project-images.ts` es un mapa manual** de capturas y diagramas de arquitectura. Si se añade un proyecto sin actualizar el mapa, el fallo es silencioso. Se puede validar con `image()` en el schema o con un test que cruce proyectos, capturas y diagramas.
 4. **No hay `astro:env`**: cualquier secreto del formulario acabaría en `process.env` sin tipos.
 5. **No hay adapter**: hoy es 100 % estático; Astro Actions necesita endpoints on-demand. Se añadirá `@astro-aws/adapter` y se desplegará en S3 + CloudFront + Lambda.
 6. **Script de OG solo para Windows/PowerShell** y no ejecutable en CI Linux. Además genera imágenes genéricas, no por proyecto.

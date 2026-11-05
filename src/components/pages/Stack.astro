@@ -30,6 +30,13 @@ import typeorm from '../../assets/images/typeorm.svg';
 import mongoose from '../../assets/images/mongoose.svg';
 import docker from '../../assets/images/docker-svgrepo-com.svg';
 import aws from '../../assets/images/aws-svgrepo-com.svg';
+import awsS3 from '../../assets/images/aws-s3.svg';
+import awsIam from '../../assets/images/aws-iam.svg';
+import awsRoute53 from '../../assets/images/aws-route-53.svg';
+import awsSqs from '../../assets/images/aws-sqs.svg';
+import awsCloudfront from '../../assets/images/aws-cloudfront.svg';
+import awsLambda from '../../assets/images/aws-lambda.svg';
+import awsEc2 from '../../assets/images/aws-ec2.svg';
 import nginx from '../../assets/images/nginx-svgrepo-com.svg';
 import githubActions from '../../assets/images/github-actions.svg';
 import astro from '../../assets/images/astro.svg';
@@ -81,6 +88,16 @@ const groups = groupKeys.map((key) => ({
 			icon: skill.data.icon ? iconMap[skill.data.icon] : undefined,
 		})),
 }));
+
+const awsServices = [
+	{ key: 's3', name: 'S3', icon: awsS3 },
+	{ key: 'iam', name: 'IAM', icon: awsIam },
+	{ key: 'route53', name: 'Route 53', icon: awsRoute53 },
+	{ key: 'sqs', name: 'SQS', icon: awsSqs },
+	{ key: 'cloudfront', name: 'CloudFront', icon: awsCloudfront },
+	{ key: 'lambda', name: 'Lambda', icon: awsLambda },
+	{ key: 'ec2', name: 'EC2', icon: awsEc2 },
+] as const;
 ---
 
 <section class="container-page py-12 sm:py-16">
@@ -119,12 +136,36 @@ const groups = groupKeys.map((key) => ({
 		))}
 	</ul>
 
+	<section aria-labelledby="aws" class="mt-16 border border-line bg-surface p-8 sm:p-10">
+		<SectionHeading
+			number="05"
+			eyebrow={t.stack.awsEyebrow}
+			title={t.stack.awsTitle}
+			id="aws"
+			subtitle={t.stack.awsIntro}
+		/>
+		<ul class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+			{awsServices.map((service) => (
+				<li class="border border-line bg-paper p-4">
+					<div class="flex items-center gap-3">
+						<TechIcon icon={service.icon} name={`AWS ${service.name}`} />
+						<span class="text-sm font-semibold">{service.name}</span>
+					</div>
+					<p class="mt-3 text-sm leading-relaxed text-muted">{t.stack.awsServices[service.key]}</p>
+				</li>
+			))}
+		</ul>
+		<p class="mt-6 inline-flex border border-warm/40 bg-paper px-3.5 py-1.5 font-mono text-[0.65rem] tracking-wide text-warm uppercase">
+			{t.stack.awsNote}
+		</p>
+	</section>
+
 	<section
 		aria-labelledby="learning"
 		class="mt-16 border border-dashed border-warm/60 bg-surface p-8 sm:p-10"
 	>
 		<SectionHeading
-			number="05"
+			number="06"
 			eyebrow={t.stack.learningEyebrow}
 			title={t.stack.learningTitle}
 			id="learning"
@@ -138,8 +179,5 @@ const groups = groupKeys.map((key) => ({
 				</li>
 			))}
 		</ul>
-		<p class="mt-6 inline-flex border border-warm/40 bg-paper px-3.5 py-1.5 font-mono text-[0.65rem] tracking-wide text-warm uppercase">
-			{t.stack.awsNote}
-		</p>
 	</section>
 </section>

@@ -40,5 +40,4 @@ metrics: []
 technicalNotes:
   es: []
   en: []
-architecturePending: false
 ---

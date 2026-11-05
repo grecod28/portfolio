@@ -6,7 +6,7 @@ import { Picture } from 'astro:assets';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { useUI } from '../../i18n/ui';
 import { projectDetailPath, projectsIndexPath, type Locale } from '../../i18n/utils';
-import { getCover } from '../../lib/covers';
+import { getArchitecture, getCover } from '../../lib/project-images';
 import Icon from '../Icon.astro';
 
 interface Props {
@@ -28,10 +28,12 @@ const {
 	result,
 	metrics,
 	technicalNotes,
-	architecturePending,
+	architecture,
+	architectureAlt,
 } = project.data;
 
 const coverImage = getCover(cover);
+const architectureImage = getArchitecture(architecture);
 const indexPath = projectsIndexPath(locale);
 const technicalItems = technicalNotes[locale];
 const linkIcon: Record<string, 'github' | 'external'> = {
@@ -57,7 +59,7 @@ const toc = [
 	{ id: 'project-decisions', label: t.project.decisions },
 	{ id: 'project-result', label: t.project.result },
 	...(metrics.length > 0 ? [{ id: 'project-metrics', label: t.project.metrics }] : []),
-	...(architecturePending ? [{ id: 'project-architecture', label: t.project.architecture }] : []),
+	...(architectureImage ? [{ id: 'project-architecture', label: t.project.architecture }] : []),
 ];
 ---
 
@@ -197,7 +199,7 @@ const toc = [
 				</section>
 			)}
 
-			{architecturePending && (
+			{architectureImage && (
 				<section
 					aria-labelledby="project-architecture-title"
 					id="project-architecture"
@@ -207,9 +209,22 @@ const toc = [
 					<h2 id="project-architecture-title" class="mt-2 text-2xl font-semibold tracking-tight">
 						{t.project.architecture}
 					</h2>
-					<div class="mt-4 flex aspect-video items-center justify-center border border-dashed border-line bg-surface font-mono text-[0.68rem] tracking-wide text-muted uppercase">
-						{t.project.architecturePending}
-					</div>
+					<figure class="mt-4">
+						<Picture
+							src={architectureImage}
+							alt={architectureAlt[locale]}
+							formats={['avif', 'webp']}
+							fallbackFormat="webp"
+							layout="constrained"
+							width={1600}
+							height={1200}
+							loading="lazy"
+							class="w-full border border-line bg-surface object-contain"
+						/>
+						<figcaption class="mt-2 font-mono text-[0.62rem] tracking-wide text-muted uppercase">
+							{architectureAlt[locale]}
+						</figcaption>
+					</figure>
 				</section>
 			)}
 		</div>
